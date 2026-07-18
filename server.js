@@ -1,7 +1,8 @@
-import { db } from "./firebaseAdmin.js";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import axios from "axios";
+import { db } from "./firebaseAdmin.js";
 
 dotenv.config();
 
@@ -10,56 +11,114 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Home Route
+// =======================
+// HOME
+// =======================
 app.get("/", (req, res) => {
-    res.json({
-        success: true,
-        app: "ISMAIL DEEN TELECOM HUB Backend",
-        status: "Running"
-    });
+  res.json({
+    success: true,
+    app: "ISMAIL DEEN TELECOM HUB Backend",
+    status: "Running"
+  });
 });
-// Health Check
+
+// =======================
+// HEALTH CHECK
+// =======================
 app.get("/api/health", (req, res) => {
-    res.json({
-        success: true,
-        message: "ISMAIL DEEN TELECOM HUB API is working."
-    });
+  res.json({
+    success: true,
+    message: "Backend is working successfully."
+  });
 });
 
-// Test Route
-app.get("/api/test", (req, res) => {
-    res.json({
-        status: "OK",
-        version: "1.0.0"
-    });
-});
-// Server
-const PORT = process.env.PORT || 3000;
-// Test Firebase Connection
+// =======================
+// FIREBASE TEST
+// =======================
 app.get("/api/firebase", async (req, res) => {
+  try {
 
-    try {
+    await db.collection("test").doc("connection").set({
+      status: "Connected",
+      time: new Date().toISOString()
+    });
 
-        await db.collection("test").doc("connection").set({
-            status: "Connected",
-            time: new Date().toISOString()
-        });
+    res.json({
+      success: true,
+      message: "Firebase Connected Successfully"
+    });
 
-        res.json({
-            success: true,
-            message: "Firebase Connected Successfully"
-        });
+  } catch (error) {
 
-    } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
 
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-
-    }
-
+  }
 });
+// =======================
+// PAYSTACK INITIALIZE
+// =======================
+app.post("/api/paystack/initialize", async (req, res) => {
+  try {
+    const { email, amount } = req.body;
+
+    const response = await axios.post(
+      "https://api.paystack.co/transaction/initialize",
+      {
+        email,
+        amount: amount * 100
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+// =======================
+// PAYSTACK VERIFY
+// =======================
+app.get("/api/paystack/verify/:reference", async (req, res) => {
+  try {
+    const { reference } = req.params;
+
+    const response = await axios.get(
+      `https://api.paystack.co/transaction/verify/${reference}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        }
+      }
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+// =======================
+// START SERVER
+// =======================
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
