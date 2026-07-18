@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
 import { db } from "./firebaseAdmin.js";
-
+import vtpassRoutes from "./routes/vtpass.js";
 dotenv.config();
 
 const app = express();
@@ -118,7 +118,7 @@ app.get("/api/paystack/verify/:reference", async (req, res) => {
 // START SERVER
 // =======================
 const PORT = process.env.PORT || 3000;
-
+app.use("/api/vtpass", vtpassRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
