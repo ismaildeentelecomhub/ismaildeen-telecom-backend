@@ -55,5 +55,31 @@ router.post("/buy-data", async (req, res) => {
   }
 
 });
+// Get Data Plans
+router.get("/data-plans/:network", async (req, res) => {
+  try {
 
+    const { network } = req.params;
+
+    const response = await axios.get(
+      `https://sandbox.vtpass.com/api/service-variations?serviceID=${network}`,
+      {
+        headers: {
+          "api-key": process.env.VTPASS_API_KEY,
+          "public-key": process.env.VTPASS_PUBLIC_KEY
+        }
+      }
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
+    });
+
+  }
+});
 export default router;
