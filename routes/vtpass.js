@@ -1,12 +1,59 @@
 import express from "express";
+import axios from "axios";
 
 const router = express.Router();
 
-router.get("/balance", (req, res) => {
+// Check Balance
+router.get("/balance", async (req, res) => {
   res.json({
     success: true,
-    message: "VTpass route is working."
+    message: "VTpass API Ready"
   });
+});
+
+// Buy Data
+router.post("/buy-data", async (req, res) => {
+
+  try {
+
+    const {
+      network,
+      phone,
+      variation_code,
+      amount,
+      request_id
+    } = req.body;
+
+    const response = await axios.post(
+      "https://sandbox.vtpass.com/api/pay",
+      {
+        request_id,
+        serviceID: network,
+        billersCode: phone,
+        variation_code,
+        amount,
+        phone
+      },
+      {
+        headers: {
+          "api-key": process.env.VTPASS_API_KEY,
+          "public-key": process.env.VTPASS_PUBLIC_KEY,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
+    });
+
+  }
+
 });
 
 export default router;
