@@ -37,7 +37,6 @@ app.get("/api/health", (req, res) => {
 // =======================
 app.get("/api/firebase", async (req, res) => {
   try {
-
     await db.collection("test").doc("connection").set({
       status: "Connected",
       time: new Date().toISOString()
@@ -49,19 +48,19 @@ app.get("/api/firebase", async (req, res) => {
     });
 
   } catch (error) {
-
     res.status(500).json({
       success: false,
       error: error.message
     });
-
   }
 });
+
 // =======================
 // PAYSTACK INITIALIZE
 // =======================
 app.post("/api/paystack/initialize", async (req, res) => {
   try {
+
     const { email, amount } = req.body;
 
     const response = await axios.post(
@@ -93,6 +92,7 @@ app.post("/api/paystack/initialize", async (req, res) => {
 // =======================
 app.get("/api/paystack/verify/:reference", async (req, res) => {
   try {
+
     const { reference } = req.params;
 
     const response = await axios.get(
