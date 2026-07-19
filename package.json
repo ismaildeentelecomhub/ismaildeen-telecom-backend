@@ -1,0 +1,17 @@
+{
+  "name": "ismaildeen-telecom-backend",
+  "version": "1.0.0",
+  "description": "Backend for ISMAIL DEEN TELECOM HUB",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.5.0"
+  }
+}
