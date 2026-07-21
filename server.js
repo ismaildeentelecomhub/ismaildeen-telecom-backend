@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 import { db } from "./firebaseAdmin.js";
 import vtpassRoutes from "./routes/vtpass.js";
+
 dotenv.config();
 
 const app = express();
@@ -60,7 +61,6 @@ app.get("/api/firebase", async (req, res) => {
 // =======================
 app.post("/api/paystack/initialize", async (req, res) => {
   try {
-
     const { email, amount } = req.body;
 
     const response = await axios.post(
@@ -92,7 +92,6 @@ app.post("/api/paystack/initialize", async (req, res) => {
 // =======================
 app.get("/api/paystack/verify/:reference", async (req, res) => {
   try {
-
     const { reference } = req.params;
 
     const response = await axios.get(
@@ -115,18 +114,27 @@ app.get("/api/paystack/verify/:reference", async (req, res) => {
 });
 
 // =======================
-// START SERVER
+// VTPASS ROUTES
 // =======================
-const PORT = process.env.PORT || 3000;
 app.use("/api/vtpass", vtpassRoutes);
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-router.get("/debug-env", (req, res) => {
+
+// =======================
+// DEBUG ENV
+// =======================
+app.get("/debug-env", (req, res) => {
   res.json({
     apiKey: process.env.VTPASS_API_KEY ? "FOUND" : "MISSING",
     publicKey: process.env.VTPASS_PUBLIC_KEY ? "FOUND" : "MISSING",
     secretKey: process.env.VTPASS_SECRET_KEY ? "FOUND" : "MISSING",
     nodeEnv: process.env.NODE_ENV
   });
+});
+
+// =======================
+// START SERVER
+// =======================
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
