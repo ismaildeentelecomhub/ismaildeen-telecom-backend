@@ -45,7 +45,7 @@ router.get("/test-auth", async (req, res) => {
 // BUY DATA
 // =======================
 router.post("/buy-data", async (req, res) => {
-  try {
+  try {console.log(req.body);
     const {
       network,
       phone,
