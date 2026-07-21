@@ -122,3 +122,11 @@ app.use("/api/vtpass", vtpassRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+router.get("/debug-env", (req, res) => {
+  res.json({
+    apiKey: process.env.VTPASS_API_KEY ? "FOUND" : "MISSING",
+    publicKey: process.env.VTPASS_PUBLIC_KEY ? "FOUND" : "MISSING",
+    secretKey: process.env.VTPASS_SECRET_KEY ? "FOUND" : "MISSING",
+    nodeEnv: process.env.NODE_ENV
+  });
+});
