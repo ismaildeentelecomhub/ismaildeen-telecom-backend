@@ -118,5 +118,21 @@ router.post("/buy-data", async (req, res) => {
     });
   }
 });
+router.get("/wallet", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://sandbox.vtpass.com/api/balance",
+      {
+        headers: {
+          "api-key": process.env.VTPASS_API_KEY,
+          "public-key": process.env.VTPASS_PUBLIC_KEY
+        }
+      }
+    );
 
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json(error.response?.data || { error: error.message });
+  }
+});
 export default router;
