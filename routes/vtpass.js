@@ -3,15 +3,47 @@ import axios from "axios";
 
 const router = express.Router();
 
-// Check Balance
-router.get("/balance", async (req, res) => {
+// =======================
+// CHECK API STATUS
+// =======================
+router.get("/balance", (req, res) => {
   res.json({
     success: true,
     message: "VTpass API Ready"
   });
 });
 
-// Buy Data
+// =======================
+// TEST AUTH
+// =======================
+router.get("/test-auth", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://sandbox.vtpass.com/api/service-variations?serviceID=mtn-data",
+      {
+        headers: {
+          "api-key": process.env.VTPASS_API_KEY,
+          "public-key": process.env.VTPASS_PUBLIC_KEY,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+// =======================
+// BUY DATA
+// =======================
 router.post("/buy-data", async (req, res) => {
   try {
     const {
@@ -21,10 +53,6 @@ router.post("/buy-data", async (req, res) => {
       amount,
       request_id
     } = req.body;
-
-    console.log("API KEY:", process.env.VTPASS_API_KEY);
-    console.log("PUBLIC KEY:", process.env.VTPASS_PUBLIC_KEY);
-    console.log("SECRET KEY:", process.env.VTPASS_SECRET_KEY);
 
     const response = await axios.post(
       "https://sandbox.vtpass.com/api/pay",
@@ -48,7 +76,7 @@ router.post("/buy-data", async (req, res) => {
     res.json(response.data);
 
   } catch (error) {
-    console.log(error.response?.data || error.message);
+    console.error(error.response?.data || error.message);
 
     res.status(500).json({
       success: false,
@@ -57,7 +85,9 @@ router.post("/buy-data", async (req, res) => {
   }
 });
 
-// Get Data Plans
+// =======================
+// GET DATA PLANS
+// =======================
 router.get("/data-plans/:network", async (req, res) => {
   try {
     const { network } = req.params;
@@ -67,7 +97,8 @@ router.get("/data-plans/:network", async (req, res) => {
       {
         headers: {
           "api-key": process.env.VTPASS_API_KEY,
-          "public-key": process.env.VTPASS_PUBLIC_KEY
+          "public-key": process.env.VTPASS_PUBLIC_KEY,
+          "Content-Type": "application/json"
         }
       }
     );
@@ -75,6 +106,8 @@ router.get("/data-plans/:network", async (req, res) => {
     res.json(response.data);
 
   } catch (error) {
+    console.error(error.response?.data || error.message);
+
     res.status(500).json({
       success: false,
       error: error.response?.data || error.message
