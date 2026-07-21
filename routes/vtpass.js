@@ -35,10 +35,28 @@ router.post("/buy-data", async (req, res) => {
         phone
       },
       {
-        headers: {
-          "api-key": process.env.VTPASS_API_KEY,
-          "public-key": process.env.VTPASS_PUBLIC_KEY,
-          "Content-Type": "application/json"
+        console.log("API KEY:", process.env.VTPASS_API_KEY);
+console.log("PUBLIC KEY:", process.env.VTPASS_PUBLIC_KEY);
+console.log("SECRET KEY:", process.env.VTPASS_SECRET_KEY);
+
+const response = await axios.post(
+  "https://sandbox.vtpass.com/api/pay",
+  {
+    request_id,
+    serviceID: network,
+    billersCode: phone,
+    variation_code,
+    amount,
+    phone
+  },
+  {
+    headers: {
+      "api-key": process.env.VTPASS_API_KEY,
+      "public-key": process.env.VTPASS_PUBLIC_KEY,
+      "Content-Type": "application/json"
+    }
+  }
+);
         }
       }
     );
